@@ -1,26 +1,55 @@
 # NextPixel
 
-An AI image generation platform with progress tracking and usage-based pricing, built with Laravel and Vue.js.
+An AI image generation platform integrating the **Pixelforge API**, with progress tracking and usage-based pricing, built with Laravel and Vue.js.
 
+- [Info](#info)
+- [Preview](#preview)
 - [Technology Stack](#technology-stack)
-    - [Backend](#backend)
-    - [Frontend](#frontend)
 - [Getting Started](#getting-started)
     - [1. Installation](#1-installation)
-    - [2. Development](#2-development)
-- [Documentation](#documentation)
+    - [2. Environment Configuration](#2-environment-configuration)
+    - [3. Development Services](#3-development-services)
+    - [4. Webhook Tunneling](#4-webhook-tunneling-local-development)
+- [Quality Assurance & Verification](#quality-assurance--verification)
+- [Documentation Index](#documentation-index)
+
+---
+
+## Info
+
+- **PromptEdit Email:** `abdelrahmansamirmostafa@gmail.com`
+- **Live Preview:** [https://next-pixel-production-lfhpfm.laravel.cloud/](https://next-pixel-production-lfhpfm.laravel.cloud/)
+
+---
+
+## Preview
+
+### Landing Page
+
+![Landing Page](docs/screenshots/landing.png)
+
+### Dashboard & Library
+
+![Dashboard & Library](docs/screenshots/dashboard.png)
+
+### Image Studio & Real-Time Cost Estimator
+
+![Image Studio](docs/screenshots/studio.png)
+
+### Admin Financial Report (Operator Reconciliation)
+
+![Admin Financial Report](docs/screenshots/reports.png)
+
+---
 
 ## Technology Stack
 
 | Layer              | Technologies                                                                     |
 | :----------------- | :------------------------------------------------------------------------------- |
-| **Backend**        | Laravel 13, PHP 8.5, PostgreSQL / SQLite                                         |
-| **Frontend**       | Vue 3 (Composition API, `<script setup>`), Inertia.js 3, Tailwind CSS 4, Reka UI |
+| **Backend**        | Laravel 13, PHP 8.5, PostgreSQL                                                  |
+| **Frontend**       | Vue 3 , Inertia.js 3, Tailwind CSS 4                                             |
 | **Precision Math** | PHP `bcmath` extension (`DECIMAL(18, 9)`)                                        |
 | **Testing**        | Pest PHP, PHPUnit, HTTP Client Mocking                                           |
-| **Tooling**        | Vite Plus (`vp`), Biome, Vue-TSC, Laravel Pint                                   |
-
----
 
 ## Getting Started
 
@@ -28,7 +57,7 @@ An AI image generation platform with progress tracking and usage-based pricing, 
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/next-pixel.git
+git clone https://github.com/iSemary/next-pixel.git
 cd next-pixel
 
 # Install dependencies
@@ -110,16 +139,6 @@ npm run check
 # Run Laravel Pint code style check
 ./vendor/bin/pint --test
 ```
-
----
-
-## Testing Special Provider Behaviors
-
-You can test edge-case handling by including special keywords in your prompts:
-
-- `[fail]` &mdash; Forces Pixelforge to reject the generation after acceptance. Confirms the generation is marked `failed` and user is charged `$0.00`.
-- `[slow]` &mdash; Simulates a long generation process to test async polling and webhook arrival.
-- `[duplicate]` &mdash; Triggers repeated webhook delivery to verify idempotent signature deduplication.
 
 ---
 
