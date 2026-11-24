@@ -10,6 +10,12 @@ use App\Services\Auth\PasswordResetService;
 use App\Services\Auth\PasswordResetServiceInterface;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\DashboardServiceInterface;
+use App\Services\Pixelforge\PixelforgeClient;
+use App\Services\Pixelforge\PixelforgeClientInterface;
+use App\Services\Pricing\PricingEstimationService;
+use App\Services\Pricing\PricingEstimationServiceInterface;
+use App\Services\Pricing\ProviderPricingService;
+use App\Services\Pricing\ProviderPricingServiceInterface;
 use App\Services\Settings\ProfileService;
 use App\Services\Settings\ProfileServiceInterface;
 use Illuminate\Support\ServiceProvider;
@@ -27,6 +33,9 @@ class RepositoryServiceProvider extends ServiceProvider
         PasswordResetServiceInterface::class => PasswordResetService::class,
         DashboardServiceInterface::class => DashboardService::class,
         ProfileServiceInterface::class => ProfileService::class,
+        PixelforgeClientInterface::class => PixelforgeClient::class,
+        ProviderPricingServiceInterface::class => ProviderPricingService::class,
+        PricingEstimationServiceInterface::class => PricingEstimationService::class,
     ];
 
     /**

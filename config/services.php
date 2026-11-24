@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'pixelforge' => [
+        'base_url' => env('PIXELFORGE_BASE_URL', 'https://pixelforge.promptedit.dev/v1'),
+        'api_key' => env('PIXELFORGE_API_KEY'),
+        'timeout' => (int) env('PIXELFORGE_TIMEOUT', 15),
+        'pricing_cache_ttl' => (int) env('PIXELFORGE_PRICING_CACHE_TTL', 3600),
+        'markup_rate' => env('PIXELFORGE_MARKUP_RATE', '0.2500'),
+    ],
+
 ];
