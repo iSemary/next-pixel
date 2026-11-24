@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\WebAuthController;
+use App\Http\Controllers\CreditsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GenerationEstimateController;
 use App\Http\Controllers\LibraryController;
@@ -25,6 +26,9 @@ Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('library', [LibraryController::class, 'index'])->name('library');
     Route::post('logout', [WebAuthController::class, 'logout'])->name('logout');
+    Route::post('credits/top-up', [CreditsController::class, 'topUp'])
+        ->middleware('throttle:30,1')
+        ->name('credits.top-up');
     Route::post('generations/estimate', [GenerationEstimateController::class, 'estimate'])
         ->middleware('throttle:60,1')
         ->name('generations.estimate');

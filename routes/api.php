@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CreditsController as ApiCreditsController;
 use App\Http\Controllers\Api\V1\GenerationEstimateController as ApiGenerationEstimateController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,9 @@ Route::prefix('v1')->as('api.v1.')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::get('user', [AuthController::class, 'user']);
         Route::post('logout', [AuthController::class, 'logout']);
+        Route::post('credits/top-up', [ApiCreditsController::class, 'topUp'])
+            ->middleware('throttle:30,1')
+            ->name('credits.top-up');
         Route::post('generations/estimate', [ApiGenerationEstimateController::class, 'estimate'])
             ->middleware('throttle:60,1')
             ->name('generations.estimate');

@@ -30,6 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'credit_balance' => '0.000000000',
         ];
     }
 
@@ -40,6 +41,16 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Seed the user with an initial credit balance in USD.
+     */
+    public function withCredits(string $amount = '25.000000000'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'credit_balance' => bcadd($amount, '0', 9),
         ]);
     }
 }

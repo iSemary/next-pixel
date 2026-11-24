@@ -8,6 +8,8 @@ use App\Services\Auth\AuthService;
 use App\Services\Auth\AuthServiceInterface;
 use App\Services\Auth\PasswordResetService;
 use App\Services\Auth\PasswordResetServiceInterface;
+use App\Services\Credits\CreditService;
+use App\Services\Credits\CreditServiceInterface;
 use App\Services\Dashboard\DashboardService;
 use App\Services\Dashboard\DashboardServiceInterface;
 use App\Services\Pixelforge\PixelforgeClient;
@@ -31,6 +33,7 @@ class RepositoryServiceProvider extends ServiceProvider
         UserRepositoryInterface::class => UserRepository::class,
         AuthServiceInterface::class => AuthService::class,
         PasswordResetServiceInterface::class => PasswordResetService::class,
+        CreditServiceInterface::class => CreditService::class,
         DashboardServiceInterface::class => DashboardService::class,
         ProfileServiceInterface::class => ProfileService::class,
         PixelforgeClientInterface::class => PixelforgeClient::class,
