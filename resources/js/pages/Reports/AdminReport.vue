@@ -85,26 +85,26 @@ function handleSync(): void {
 <template>
     <Head title="Admin Report" />
 
-    <div
-        class="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-6 p-4 md:p-6"
-    >
-        <AdminReportHeader
-            v-model:start-date="startDate"
-            v-model:end-date="endDate"
-            :is-loading="isLoading"
-            @apply="handleApply"
-            @preset="handlePreset"
-            @sync="handleSync"
-        />
+    <div class="flex flex-1 flex-col p-4 md:p-6">
+        <div class="flex w-full flex-1 flex-col gap-6">
+            <AdminReportHeader
+                v-model:start-date="startDate"
+                v-model:end-date="endDate"
+                :is-loading="isLoading"
+                @apply="handleApply"
+                @preset="handlePreset"
+                @sync="handleSync"
+            />
 
-        <AdminReportKpiGrid :summary="summary" />
+            <AdminReportKpiGrid :summary="summary" />
 
-        <AdminReportDailyTable
-            :daily="daily"
-            :summary="summary"
-            :filters="filters"
-        />
+            <AdminReportDailyTable
+                :daily="daily"
+                :summary="summary"
+                :filters="filters"
+            />
 
-        <AdminReportUserTable :users="by_user" />
+            <AdminReportUserTable :users="by_user" />
+        </div>
     </div>
 </template>
