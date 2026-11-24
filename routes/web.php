@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GenerationEstimateController;
+use App\Http\Controllers\LibraryController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -21,7 +23,11 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('library', [LibraryController::class, 'index'])->name('library');
     Route::post('logout', [WebAuthController::class, 'logout'])->name('logout');
+    Route::post('generations/estimate', [GenerationEstimateController::class, 'estimate'])
+        ->middleware('throttle:60,1')
+        ->name('generations.estimate');
 });
 
 require __DIR__.'/settings.php';

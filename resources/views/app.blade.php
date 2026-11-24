@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  @class(['dark' => ($appearance ?? 'dark') !== 'light'])>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,12 +9,14 @@
             (function() {
                 try {
                     const stored = localStorage.getItem('appearance');
-                    const appearance = stored || '{{ $appearance ?? "system" }}';
+                    const appearance = stored || '{{ $appearance ?? "dark" }}';
 
                     if (appearance === 'dark' || (appearance === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                         document.documentElement.classList.add('dark');
-                    } else {
+                    } else if (appearance === 'light') {
                         document.documentElement.classList.remove('dark');
+                    } else {
+                        document.documentElement.classList.add('dark');
                     }
                 } catch (e) {}
             })();
@@ -23,6 +25,10 @@
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style>
             html {
+                background-color: #1a1a1a;
+            }
+
+            html:not(.dark) {
                 background-color: #f8f9fa;
             }
 

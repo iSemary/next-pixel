@@ -165,8 +165,39 @@
         aurora-shift 12s ease-in-out infinite;
 }
 
+@keyframes cta-ambient-pulse {
+    0%,
+    100% {
+        opacity: 0.35;
+        transform: scale(1) translate(0%, 0%);
+    }
+    50% {
+        opacity: 0.6;
+        transform: scale(1.08) translate(2%, -2%);
+    }
+}
+
+@keyframes cta-ambient-shift {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+    50% {
+        filter: hue-rotate(15deg);
+    }
+    100% {
+        filter: hue-rotate(0deg);
+    }
+}
+
+.cta-ambient-glow {
+    animation:
+        cta-ambient-pulse 10s ease-in-out infinite,
+        cta-ambient-shift 16s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .aurora-glow {
+    .aurora-glow,
+    .cta-ambient-glow {
         animation: none !important;
     }
 }

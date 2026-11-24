@@ -11,9 +11,14 @@ import {
 import { onMounted, onUnmounted, ref } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import AuthModal from '@/components/AuthModal.vue';
+import DriftWall, { type DriftWallItem } from '@/components/DriftWall.vue';
+import PatternWaves from '@/components/PatternWaves.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
 import { Button } from '@/components/ui/button';
+import { useAppearance } from '@/composables/useAppearance';
 import { dashboard } from '@/routes';
+
+const { resolvedAppearance } = useAppearance();
 
 const authModalOpen = ref(false);
 const authModalMode = ref<'login' | 'register'>('login');
@@ -48,6 +53,99 @@ const scrollTo = (id: string) => {
         el.scrollIntoView({ behavior: 'smooth' });
     }
 };
+
+const driftWallItems: DriftWallItem[] = [
+    {
+        image: '/images/drift-wall/art-1.jpg',
+        title: 'Cyberpunk Metropolis',
+        prompt: 'Volumetric neon rain over towering cybernetic skyline, reflections on wet asphalt',
+        badge: '1536×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-2.jpg',
+        title: 'Botanical Sanctuary',
+        prompt: 'Macro crystalline terrarium with bioluminescent orchids, soft morning mist, 8k',
+        badge: '1024×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-3.jpg',
+        title: 'Prismatic Monolith',
+        prompt: 'Floating black glass obelisk dispersing spectral caustics in endless void, octane 3D',
+        badge: '1024×1536 • Medium',
+    },
+    {
+        image: '/images/drift-wall/art-4.jpg',
+        title: 'Neural Synthetics',
+        prompt: 'Cosmic nebula interwoven with glowing golden synaptic fibers, interstellar particle dust',
+        badge: '1536×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-5.jpg',
+        title: 'Brutalist Pavillion',
+        prompt: 'Minimalist concrete villa on Mediterranean cliffs with emerald infinity pool, architectural photo',
+        badge: '1024×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-6.jpg',
+        title: 'Robotic Cyber-Samurai',
+        prompt: 'Matte carbon fiber exoskeleton armor, glowing teal optical visor, studio rim lighting portrait',
+        badge: '1024×1536 • High',
+    },
+    {
+        image: '/images/drift-wall/art-7.jpg',
+        title: 'Martian Dunes Explorer',
+        prompt: 'Surreal crimson dunes at twin sunset, autonomous rover surveying ancient alien monolith',
+        badge: '1536×1024 • Medium',
+    },
+    {
+        image: '/images/drift-wall/art-8.jpg',
+        title: 'Emerald Vein Geode',
+        prompt: 'Cross-section of volcanic geode with liquid gold filament veins, macro laboratory lens',
+        badge: '1024×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-9.jpg',
+        title: 'Fluid Chrome Kinetic',
+        prompt: 'Morphing liquid mercury sculpture suspended in brutalist gallery space, raytraced reflections',
+        badge: '1024×1536 • High',
+    },
+    {
+        image: '/images/drift-wall/art-10.jpg',
+        title: 'Vaporwave Sunset Highway',
+        prompt: 'Retro-futuristic palm grid landscape under glowing magenta sun, lo-fi aesthetic wallpaper',
+        badge: '1536×1024 • Medium',
+    },
+    {
+        image: '/images/drift-wall/art-11.jpg',
+        title: 'Submerged Sunken Temple',
+        prompt: 'Ancient flooded temple sanctuary illuminated by underwater sunlight caustics, coral reef',
+        badge: '1024×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-12.jpg',
+        title: 'Isometric Lab Studio',
+        prompt: 'Warm cozy developer workstation with miniature bonsai plants, soft isometric 3D lighting',
+        badge: '1024×1536 • Low',
+    },
+    {
+        image: '/images/drift-wall/art-13.jpg',
+        title: 'Holographic White Tiger',
+        prompt: 'Mechanized predator prowling through neon bamboo grove, dynamic motion blur, unreal engine 5',
+        badge: '1536×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-14.jpg',
+        title: 'Magma Caldera Gateway',
+        prompt: 'Obsidian portal framing boiling subterranean magma lake, heat distortion embers',
+        badge: '1024×1024 • High',
+    },
+    {
+        image: '/images/drift-wall/art-15.jpg',
+        title: 'Steampunk Cloud Cruiser',
+        prompt: 'Victorian brass and mahogany airship sailing through towering cumulus sunset cloudscape',
+        badge: '1024×1536 • Medium',
+    },
+];
 
 const features = [
     {
@@ -216,335 +314,38 @@ const steps = [
             </div>
         </header>
 
-        <!-- Hero Section with Immersive Rotated Mosaic Background -->
+        <!-- Hero Section with Pattern Waves Background -->
         <section class="relative overflow-hidden pt-12 pb-24 lg:pt-20 lg:pb-36">
-            <!-- Immersive Background: Slightly rotated mosaic of creative artwork -->
+            <!-- Pattern Waves Animated Background (vue-bits.dev/backgrounds/pattern-waves) -->
             <div
-                class="pointer-events-none absolute inset-0 -top-8 flex items-center justify-center overflow-hidden opacity-40 select-none dark:opacity-30"
+                class="pointer-events-none absolute inset-0 z-0 overflow-hidden"
                 aria-hidden="true"
             >
-                <div
-                    class="grid max-w-7xl -rotate-2 grid-cols-2 gap-4 px-4 sm:gap-6 md:-rotate-3 md:grid-cols-3"
-                >
-                    <!-- Artwork 1: Neon Botanical Terrarium -->
-                    <div
-                        class="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:shadow-2xl"
-                    >
-                        <svg
-                            viewBox="0 0 400 300"
-                            class="h-full w-full object-cover"
-                        >
-                            <defs>
-                                <linearGradient
-                                    id="g1"
-                                    x1="0%"
-                                    y1="0%"
-                                    x2="100%"
-                                    y2="100%"
-                                >
-                                    <stop offset="0%" stop-color="#052e16" />
-                                    <stop offset="50%" stop-color="#10B981" />
-                                    <stop offset="100%" stop-color="#A3E600" />
-                                </linearGradient>
-                                <radialGradient
-                                    id="glow1"
-                                    cx="60%"
-                                    cy="40%"
-                                    r="50%"
-                                >
-                                    <stop
-                                        offset="0%"
-                                        stop-color="#A3E600"
-                                        stop-opacity="0.6"
-                                    />
-                                    <stop
-                                        offset="100%"
-                                        stop-color="#052e16"
-                                        stop-opacity="0"
-                                    />
-                                </radialGradient>
-                            </defs>
-                            <rect width="400" height="300" fill="#141E16" />
-                            <circle
-                                cx="240"
-                                cy="120"
-                                r="120"
-                                fill="url(#glow1)"
-                            />
-                            <path
-                                d="M50 250 Q 150 100 200 200 T 350 150 L 400 300 L 0 300 Z"
-                                fill="url(#g1)"
-                                opacity="0.85"
-                            />
-                            <circle
-                                cx="120"
-                                cy="80"
-                                r="3"
-                                fill="#A3E600"
-                                opacity="0.8"
-                            />
-                            <circle
-                                cx="280"
-                                cy="160"
-                                r="4"
-                                fill="#4ADE80"
-                                opacity="0.9"
-                            />
-                            <circle
-                                cx="310"
-                                cy="70"
-                                r="2.5"
-                                fill="#10B981"
-                                opacity="0.7"
-                            />
-                        </svg>
-                        <div
-                            class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-card/95 via-card/40 to-transparent p-3 dark:from-[#1A1A1A]/90 dark:via-transparent"
-                        >
-                            <span
-                                class="text-[10px] font-medium text-foreground dark:text-[#FAFAFA]"
-                                >Simulated Artwork • Generative v2</span
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Artwork 2: Prismatic Monolith -->
-                    <div
-                        class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:shadow-2xl"
-                    >
-                        <svg
-                            viewBox="0 0 400 300"
-                            class="h-full w-full object-cover"
-                        >
-                            <defs>
-                                <linearGradient
-                                    id="g2"
-                                    x1="0%"
-                                    y1="100%"
-                                    x2="100%"
-                                    y2="0%"
-                                >
-                                    <stop offset="0%" stop-color="#1A1A1A" />
-                                    <stop offset="60%" stop-color="#047857" />
-                                    <stop offset="100%" stop-color="#A3E600" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="400" height="300" fill="#18181B" />
-                            <polygon
-                                points="200,40 320,240 80,240"
-                                fill="url(#g2)"
-                                opacity="0.9"
-                            />
-                            <line
-                                x1="200"
-                                y1="40"
-                                x2="200"
-                                y2="240"
-                                stroke="#A3E600"
-                                stroke-width="1.5"
-                                opacity="0.6"
-                            />
-                        </svg>
-                        <div
-                            class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-card/95 via-card/40 to-transparent p-3 dark:from-[#1A1A1A]/90 dark:via-transparent"
-                        >
-                            <span
-                                class="text-[10px] font-medium text-foreground dark:text-[#FAFAFA]"
-                                >Simulated Artwork • 1024×1024</span
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Artwork 3: Cyber Dunes Horizon -->
-                    <div
-                        class="relative hidden aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm md:block dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:shadow-2xl"
-                    >
-                        <svg
-                            viewBox="0 0 400 300"
-                            class="h-full w-full object-cover"
-                        >
-                            <defs>
-                                <linearGradient
-                                    id="g3"
-                                    x1="50%"
-                                    y1="0%"
-                                    x2="50%"
-                                    y2="100%"
-                                >
-                                    <stop offset="0%" stop-color="#064E3B" />
-                                    <stop offset="70%" stop-color="#1A1A1A" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="400" height="300" fill="url(#g3)" />
-                            <circle
-                                cx="200"
-                                cy="110"
-                                r="55"
-                                fill="#A3E600"
-                                opacity="0.75"
-                            />
-                            <path
-                                d="M0 190 Q 100 150 200 180 T 400 170 L 400 300 L 0 300 Z"
-                                fill="#0f172a"
-                            />
-                            <path
-                                d="M0 220 Q 160 180 260 210 T 400 200 L 400 300 L 0 300 Z"
-                                fill="#042f2e"
-                                opacity="0.9"
-                            />
-                        </svg>
-                        <div
-                            class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-card/95 via-card/40 to-transparent p-3 dark:from-[#1A1A1A]/90 dark:via-transparent"
-                        >
-                            <span
-                                class="text-[10px] font-medium text-foreground dark:text-[#FAFAFA]"
-                                >Simulated Artwork • Creative Seed</span
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Artwork 4: Quantum Neural Web -->
-                    <div
-                        class="relative hidden aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm md:block dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:shadow-2xl"
-                    >
-                        <svg
-                            viewBox="0 0 400 300"
-                            class="h-full w-full object-cover"
-                        >
-                            <rect width="400" height="300" fill="#111827" />
-                            <path
-                                d="M30 50 L 140 180 L 260 90 L 370 230"
-                                stroke="#A3E600"
-                                stroke-width="2"
-                                fill="none"
-                                opacity="0.6"
-                            />
-                            <path
-                                d="M80 260 L 210 140 L 330 200"
-                                stroke="#10B981"
-                                stroke-width="1.5"
-                                fill="none"
-                                opacity="0.5"
-                            />
-                            <circle
-                                cx="140"
-                                cy="180"
-                                r="7"
-                                fill="#A3E600"
-                                opacity="0.9"
-                            />
-                            <circle
-                                cx="260"
-                                cy="90"
-                                r="6"
-                                fill="#4ADE80"
-                                opacity="0.8"
-                            />
-                            <circle
-                                cx="210"
-                                cy="140"
-                                r="5"
-                                fill="#10B981"
-                                opacity="0.85"
-                            />
-                        </svg>
-                        <div
-                            class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-card/95 via-card/40 to-transparent p-3 dark:from-[#1A1A1A]/90 dark:via-transparent"
-                        >
-                            <span
-                                class="text-[10px] font-medium text-foreground dark:text-[#FAFAFA]"
-                                >Simulated Artwork • Vector AI</span
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Artwork 5: Prismatic Aurora Mesh -->
-                    <div
-                        class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:shadow-2xl"
-                    >
-                        <svg
-                            viewBox="0 0 400 300"
-                            class="h-full w-full object-cover"
-                        >
-                            <defs>
-                                <radialGradient
-                                    id="g5"
-                                    cx="50%"
-                                    cy="50%"
-                                    r="60%"
-                                >
-                                    <stop offset="0%" stop-color="#A3E600" />
-                                    <stop offset="50%" stop-color="#059669" />
-                                    <stop offset="100%" stop-color="#1A1A1A" />
-                                </radialGradient>
-                            </defs>
-                            <rect width="400" height="300" fill="#18181B" />
-                            <ellipse
-                                cx="200"
-                                cy="150"
-                                rx="160"
-                                ry="90"
-                                fill="url(#g5)"
-                                opacity="0.7"
-                            />
-                        </svg>
-                        <div
-                            class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-card/95 via-card/40 to-transparent p-3 dark:from-[#1A1A1A]/90 dark:via-transparent"
-                        >
-                            <span
-                                class="text-[10px] font-medium text-foreground dark:text-[#FAFAFA]"
-                                >Simulated Artwork • Ambient Glow</span
-                            >
-                        </div>
-                    </div>
-
-                    <!-- Artwork 6: Architectural Pavillion -->
-                    <div
-                        class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:shadow-2xl"
-                    >
-                        <svg
-                            viewBox="0 0 400 300"
-                            class="h-full w-full object-cover"
-                        >
-                            <rect width="400" height="300" fill="#1A1A1A" />
-                            <polygon
-                                points="60,260 160,80 340,80 240,260"
-                                fill="#2B2B2B"
-                                stroke="#404040"
-                            />
-                            <polygon
-                                points="160,80 240,260 210,260 130,80"
-                                fill="#A3E600"
-                                opacity="0.3"
-                            />
-                            <line
-                                x1="340"
-                                y1="80"
-                                x2="240"
-                                y2="260"
-                                stroke="#10B981"
-                                stroke-width="2"
-                            />
-                        </svg>
-                        <div
-                            class="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-card/95 via-card/40 to-transparent p-3 dark:from-[#1A1A1A]/90 dark:via-transparent"
-                        >
-                            <span
-                                class="text-[10px] font-medium text-foreground dark:text-[#FAFAFA]"
-                                >Simulated Artwork • 3D Render</span
-                            >
-                        </div>
-                    </div>
-                </div>
+                <PatternWaves
+                    preset="silk"
+                    :color="
+                        resolvedAppearance === 'dark' ? '#A3E600' : '#4D7C0F'
+                    "
+                    :background-color="
+                        resolvedAppearance === 'dark' ? '#1A1A1A' : '#F8F9FA'
+                    "
+                    :opacity="resolvedAppearance === 'dark' ? 0.45 : 0.28"
+                    fade="bottom"
+                    :fade-size="0.6"
+                    :speed="0.3"
+                    :scale="1.0"
+                    :interactive="true"
+                    class="h-full w-full"
+                />
             </div>
 
-            <!-- Radial Vignette Overlay keeping headline & text razor-sharp -->
+            <!-- Soft Radial & Bottom Gradient Overlays keeping headline & text razor-sharp -->
             <div
-                class="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/30 via-background/80 to-background dark:from-background/40 dark:via-background/85 dark:to-background"
+                class="pointer-events-none absolute inset-0 z-1 bg-gradient-to-b from-background/30 via-background/70 to-background dark:from-background/40 dark:via-background/75 dark:to-background"
                 aria-hidden="true"
             ></div>
             <div
-                class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,var(--color-background)_75%)]"
+                class="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_at_center,transparent_25%,var(--color-background)_80%)]"
                 aria-hidden="true"
             ></div>
 
@@ -634,21 +435,16 @@ const steps = [
             </div>
         </section>
 
-        <!-- Feature Section: 3 Minimal Cards on subtle glass surfaces -->
+        <!-- Feature Section: Full-Width Drift Wall & 3 Minimal Cards -->
         <section
             id="features"
             class="scroll-mt-20 border-t border-border bg-secondary/50 py-20 lg:py-28 dark:border-[#404040]/40 dark:bg-surface/30"
         >
             <div class="container mx-auto max-w-6xl px-4 sm:px-6">
                 <!-- Section Header -->
-                <div class="mx-auto mb-16 max-w-2xl text-center">
-                    <span
-                        class="text-xs font-semibold tracking-wider text-[#3F6212] uppercase dark:text-[#A3E600]"
-                    >
-                        Core Features
-                    </span>
+                <div class="mx-auto mb-14 max-w-2xl text-center">
                     <h2
-                        class="mt-2 font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+                        class="font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
                     >
                         Designed for creators. Built for clarity.
                     </h2>
@@ -659,7 +455,44 @@ const steps = [
                         on ideation, precision, and predictable costs.
                     </p>
                 </div>
+            </div>
 
+            <!-- Full-Width 3D Drift Wall Showcase -->
+            <div class="relative mb-16 w-full overflow-hidden sm:mb-20">
+                <div class="h-[400px] w-full sm:h-[460px] md:h-[520px]">
+                    <DriftWall
+                        :items="driftWallItems"
+                        :columns="6"
+                        :tile-width="240"
+                        :tile-height="160"
+                        :gap="18"
+                        :radius="14"
+                        :tilt="12"
+                        :turn="-10"
+                        :speed="36"
+                        :depth="140"
+                        :pause-on-hover="true"
+                        :overlay-color="
+                            resolvedAppearance === 'dark'
+                                ? '#000000'
+                                : '#ffffff'
+                        "
+                        class="h-full w-full"
+                    />
+                </div>
+
+                <!-- Edge Gradient Fades for Seamless Viewport Blending -->
+                <div
+                    class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-secondary/80 to-transparent sm:w-36 dark:from-[#1c1c1c]/90"
+                    aria-hidden="true"
+                ></div>
+                <div
+                    class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-secondary/80 to-transparent sm:w-36 dark:from-[#1c1c1c]/90"
+                    aria-hidden="true"
+                ></div>
+            </div>
+
+            <div class="container mx-auto max-w-6xl px-4 sm:px-6">
                 <!-- 3 Feature Cards Grid -->
                 <div class="grid gap-6 md:grid-cols-3">
                     <div
@@ -713,13 +546,8 @@ const steps = [
             <div class="container mx-auto max-w-6xl px-4 sm:px-6">
                 <!-- Section Header -->
                 <div class="mx-auto mb-16 max-w-2xl text-center">
-                    <span
-                        class="text-xs font-semibold tracking-wider text-[#3F6212] uppercase dark:text-[#A3E600]"
-                    >
-                        Workflow
-                    </span>
                     <h2
-                        class="mt-2 font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+                        class="font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
                     >
                         How it works
                     </h2>
@@ -823,57 +651,105 @@ const steps = [
             </div>
         </section>
 
-        <!-- Final CTA Section: Soft Light Gradient / Dark Aurora Background -->
-        <section class="container mx-auto max-w-6xl px-4 py-20 sm:px-6">
+        <!-- Final CTA Section: Soft Lime & Emerald Waves (Adaptive Light & Dark Modes) -->
+        <section
+            class="container mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 md:py-20"
+        >
             <div
-                class="relative overflow-hidden rounded-3xl border border-[#A3E600]/40 bg-[linear-gradient(120deg,#F7FEE7_0%,#ECFDF5_50%,#F0FDF4_100%)] px-6 py-16 text-center shadow-md sm:px-12 sm:py-20 dark:border-[#404040]/70 dark:bg-[#242424]/90 dark:bg-none dark:shadow-2xl"
+                class="relative overflow-hidden rounded-3xl bg-white px-6 py-12 text-center shadow-xl shadow-zinc-200/50 sm:px-12 sm:py-16 md:py-20 dark:bg-[#121418] dark:shadow-[0_0_50px_rgba(0,0,0,0.6)]"
             >
-                <!-- Aurora Animated Glow -->
+                <!-- Subtle Grain Texture Overlay for Visual Depth -->
                 <div
-                    class="aurora-glow pointer-events-none absolute -inset-10 opacity-20 blur-3xl dark:opacity-45"
+                    class="pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-overlay"
+                    :style="{
+                        backgroundImage: `url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E&quot;)`,
+                        backgroundRepeat: 'repeat',
+                    }"
+                    aria-hidden="true"
+                ></div>
+
+                <!-- Soft Animated Ambient Lighting & Blurred Gradient Waves -->
+                <div
+                    class="cta-ambient-glow pointer-events-none absolute -inset-10 opacity-30 blur-3xl dark:opacity-45"
                     aria-hidden="true"
                 >
+                    <!-- Soft Lime Wave (Top-Left) -->
                     <div
-                        class="absolute inset-0 bg-gradient-to-r from-[#A3E600]/25 via-[#4ADE80]/20 to-[#059669]/25"
+                        class="absolute -top-16 -left-16 h-80 w-80 rounded-full bg-gradient-to-br from-[#A3E600]/30 via-[#4ADE80]/20 to-transparent"
+                    ></div>
+                    <!-- Soft Emerald Wave (Bottom-Right) -->
+                    <div
+                        class="absolute -right-16 -bottom-20 h-96 w-96 rounded-full bg-gradient-to-tl from-[#059669]/30 via-[#10B981]/20 to-transparent dark:from-[#059669]/35"
+                    ></div>
+                    <!-- Soft Ambient Emerald Accent (Top-Right) -->
+                    <div
+                        class="absolute top-0 right-1/4 h-64 w-64 rounded-full bg-gradient-to-b from-[#10B981]/15 to-transparent"
                     ></div>
                 </div>
 
+                <!-- Clean Center Vignette to Preserve Razor-Sharp Typography Contrast -->
+                <div
+                    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.75)_0%,transparent_80%)] dark:bg-[radial-gradient(ellipse_at_center,rgba(18,20,24,0.75)_0%,transparent_80%)]"
+                    aria-hidden="true"
+                ></div>
+
                 <div class="relative z-10 mx-auto max-w-2xl">
+                    <!-- Headline with subtle lime-to-emerald gradient on "starts here." -->
                     <h2
-                        class="font-bricolage text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl md:text-5xl"
+                        class="font-bricolage text-3xl font-extrabold tracking-tight text-balance text-zinc-900 sm:text-4xl md:text-5xl dark:text-white"
                     >
-                        Your next idea starts here.
+                        Your next idea
+                        <span
+                            class="bg-gradient-to-r from-[#4D7C0F] via-[#15803D] to-[#047857] bg-clip-text text-transparent dark:from-[#A3E600] dark:via-[#4ADE80] dark:to-[#10B981]"
+                        >
+                            starts here.
+                        </span>
                     </h2>
+
+                    <!-- Description -->
                     <p
-                        class="mt-4 text-base text-balance text-secondary-foreground sm:text-lg dark:text-muted-foreground"
+                        class="mt-4 text-base leading-relaxed text-balance text-zinc-600 sm:text-lg dark:text-zinc-300"
                     >
-                        Create images, explore ideas, and stay in control of
-                        every generation.
+                        Turn your imagination into images. Stay in control of
+                        every generation and every dollar.
                     </p>
 
-                    <div class="mt-8 flex justify-center">
+                    <!-- Primary Action & Subtle Button Glow -->
+                    <div class="mt-8 flex flex-col items-center gap-4">
                         <template v-if="$page.props.auth?.user">
                             <Button
                                 size="lg"
                                 as-child
-                                class="h-12 cursor-pointer bg-[#A3E600] px-9 text-base font-semibold text-[#171717] shadow-xs transition-all duration-200 hover:bg-[#b2f500] hover:shadow-md dark:shadow-[0_0_24px_rgba(163,230,0,0.4)] dark:hover:shadow-[0_0_36px_rgba(163,230,0,0.6)]"
+                                class="group relative h-12 cursor-pointer overflow-hidden rounded-xl bg-[#A3E600] px-8 text-base font-semibold text-[#171717] shadow-[0_0_20px_rgba(163,230,0,0.3)] transition-all duration-300 hover:scale-[1.02] hover:bg-[#b5f802] hover:shadow-[0_0_32px_rgba(163,230,0,0.5)] active:scale-[0.98] motion-reduce:transform-none"
                             >
                                 <Link :href="dashboard()">
-                                    Start creating
-                                    <ArrowRight class="ml-2 h-4 w-4" />
+                                    <span>Start creating</span>
+                                    <ArrowRight
+                                        class="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transform-none"
+                                    />
                                 </Link>
                             </Button>
                         </template>
                         <template v-else>
                             <Button
                                 size="lg"
-                                class="h-12 cursor-pointer bg-[#A3E600] px-9 text-base font-semibold text-[#171717] shadow-xs transition-all duration-200 hover:bg-[#b2f500] hover:shadow-md dark:shadow-[0_0_24px_rgba(163,230,0,0.4)] dark:hover:shadow-[0_0_36px_rgba(163,230,0,0.6)]"
+                                class="group relative h-12 cursor-pointer overflow-hidden rounded-xl bg-[#A3E600] px-8 text-base font-semibold text-[#171717] shadow-[0_0_20px_rgba(163,230,0,0.3)] transition-all duration-300 hover:scale-[1.02] hover:bg-[#b5f802] hover:shadow-[0_0_32px_rgba(163,230,0,0.5)] active:scale-[0.98] motion-reduce:transform-none"
                                 @click="openRegisterModal"
                             >
-                                Start creating
-                                <ArrowRight class="ml-2 h-4 w-4" />
+                                <span>Start creating</span>
+                                <ArrowRight
+                                    class="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transform-none"
+                                />
                             </Button>
                         </template>
+
+                        <!-- Supporting Micro Copy -->
+                        <p
+                            class="text-xs font-medium text-zinc-500 sm:text-sm dark:text-zinc-400"
+                        >
+                            Transparent pricing · No subscriptions · Failed
+                            generations are free
+                        </p>
                     </div>
                 </div>
             </div>
