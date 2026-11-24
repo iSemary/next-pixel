@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CreditsController as ApiCreditsController;
+use App\Http\Controllers\Api\V1\GenerationController as ApiGenerationController;
 use App\Http\Controllers\Api\V1\GenerationEstimateController as ApiGenerationEstimateController;
 use App\Http\Controllers\Api\V1\PasswordResetController;
+use App\Http\Controllers\ReferenceImageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,9 +39,21 @@ Route::prefix('v1')->as('api.v1.')->group(function () {
         Route::post('credits/top-up', [ApiCreditsController::class, 'topUp'])
             ->middleware('throttle:30,1')
             ->name('credits.top-up');
+        Route::get('generations', [ApiGenerationController::class, 'index'])
+            ->middleware('throttle:120,1')
+            ->name('generations.index');
+        Route::post('generations', [ApiGenerationController::class, 'store'])
+            ->middleware('throttle:30,1')
+            ->name('generations.store');
+        Route::get('generations/{generation}', [ApiGenerationController::class, 'show'])
+            ->middleware('throttle:120,1')
+            ->name('generations.show');
         Route::post('generations/estimate', [ApiGenerationEstimateController::class, 'estimate'])
             ->middleware('throttle:60,1')
             ->name('generations.estimate');
+        Route::post('generations/reference-images', [ReferenceImageController::class, 'store'])
+            ->middleware('throttle:30,1')
+            ->name('generations.reference-images.store');
     });
 });
 
@@ -56,6 +70,12 @@ Route::post('reset-password', [PasswordResetController::class, 'resetPassword'])
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('generations', [ApiGenerationController::class, 'index'])
+        ->middleware('throttle:120,1');
+    Route::post('generations', [ApiGenerationController::class, 'store'])
+        ->middleware('throttle:30,1');
+    Route::get('generations/{generation}', [ApiGenerationController::class, 'show'])
+        ->middleware('throttle:120,1');
     Route::post('generations/estimate', [ApiGenerationEstimateController::class, 'estimate'])
         ->middleware('throttle:60,1');
 });

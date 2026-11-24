@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Label } from '@/components/ui/label';
 
-const COUNTS = [1, 2, 3, 4, 5] as const;
+const COUNTS = [1, 2, 3, 4] as const;
 
 withDefaults(
     defineProps<{
@@ -30,7 +30,7 @@ const emit = defineEmits<{
             </span>
         </div>
 
-        <div class="grid grid-cols-5 gap-1.5">
+        <div class="grid grid-cols-4 gap-1.5">
             <button
                 v-for="count in COUNTS"
                 :key="count"

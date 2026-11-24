@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\ImageQuality;
 use App\Enums\ImageSize;
+use App\Http\Resources\GenerationResource;
 use App\Models\User;
 use App\Services\Dashboard\DashboardServiceInterface;
+use App\Services\Generations\GenerationQueryServiceInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,7 +15,8 @@ use Inertia\Response;
 class DashboardController extends Controller
 {
     public function __construct(
-        protected DashboardServiceInterface $dashboardService
+        protected DashboardServiceInterface $dashboardService,
+        protected GenerationQueryServiceInterface $generationQuery,
     ) {}
 
     /**
@@ -84,6 +87,9 @@ class DashboardController extends Controller
             'supportedSizes' => $supportedSizes,
             'supportedQualities' => $supportedQualities,
             'testingKeywords' => $testingKeywords,
+            'recentGenerations' => GenerationResource::collection(
+                $this->generationQuery->getRecentForStudio($user, 12)
+            )->resolve($request),
         ]);
     }
 }

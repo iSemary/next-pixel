@@ -1,29 +1,51 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+import { watch } from 'vue';
 import GenerationForm from '@/components/generation/GenerationForm.vue';
 import GenerationGallery from '@/components/generation/GenerationGallery.vue';
-import { dashboard } from '@/routes';
-import type { ImageQualityOption, ImageSizeOption } from '@/types/generation';
+import { useGenerationStudio } from '@/composables/useGenerationStudio';
+import { dashboard, imageStudio } from '@/routes';
+import type {
+    GenerationItem,
+    ImageQualityOption,
+    ImageSizeOption,
+} from '@/types/generation';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         metrics?: Record<string, unknown>;
         supportedSizes: ImageSizeOption[];
         supportedQualities: ImageQualityOption[];
         testingKeywords?: string[];
+        recentGenerations?: GenerationItem[];
     }>(),
     {
         metrics: () => ({}),
         testingKeywords: () => [],
+        recentGenerations: () => [],
     },
+);
+
+const { hydrateGenerations } = useGenerationStudio();
+
+watch(
+    () => props.recentGenerations,
+    (items) => {
+        hydrateGenerations(items || []);
+    },
+    { immediate: true },
 );
 
 defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Image Studio',
+                title: 'Dashboard',
                 href: dashboard(),
+            },
+            {
+                title: 'Image Studio',
+                href: imageStudio(),
             },
         ],
     },

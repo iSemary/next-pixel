@@ -41,6 +41,7 @@ interface DriftWallProps {
     overlayColor?: string;
     className?: string;
     style?: CSSProperties;
+    fullWidth?: boolean;
 }
 
 interface ColumnMeta {
@@ -100,6 +101,7 @@ const props = withDefaults(defineProps<DriftWallProps>(), {
     grayscale: false,
     overlayColor: '#060010',
     className: '',
+    fullWidth: false,
 });
 
 const containerRef = ref<HTMLDivElement | null>(null);
@@ -185,8 +187,9 @@ watch(
 const applyPlaneTransform = (px: number, py: number) => {
     const plane = planeRef.value;
     if (!plane) return;
+    const scale = props.fullWidth ? 1.25 : 1.18;
     plane.style.transform =
-        `translate(-50%, -50%) scale(1.18) ` +
+        `translate(-50%, -50%) scale(${scale}) ` +
         `rotateX(${props.tilt + py}deg) rotateY(${props.turn + px}deg) rotateZ(${props.roll}deg) ` +
         `translateZ(${-props.depth}px)`;
 };
@@ -308,9 +311,15 @@ onUnmounted(() => {
         mq.removeEventListener('change', onReducedChange);
 });
 
-const maskStyle =
-    'radial-gradient(ellipse 78% 82% at 50% 46%, #000 var(--dw-edge), transparent 100%), ' +
-    'linear-gradient(to top, #000 var(--dw-edge), transparent 100%)';
+const maskStyle = computed(() => {
+    if (props.fullWidth) {
+        return 'linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%)';
+    }
+    return (
+        'radial-gradient(ellipse 78% 82% at 50% 46%, #000 var(--dw-edge), transparent 100%), ' +
+        'linear-gradient(to top, #000 var(--dw-edge), transparent 100%)'
+    );
+});
 
 const cssVars = computed<CSSProperties>(
     () =>
@@ -326,10 +335,10 @@ const cssVars = computed<CSSProperties>(
             '--dw-edge': `${Math.max(0, (1 - props.fade) * 100)}%`,
             perspective: `${props.perspective}px`,
             perspectiveOrigin: '50% 50%',
-            WebkitMaskImage: maskStyle,
-            maskImage: maskStyle,
-            WebkitMaskComposite: 'source-in',
-            maskComposite: 'intersect',
+            WebkitMaskImage: maskStyle.value,
+            maskImage: maskStyle.value,
+            WebkitMaskComposite: props.fullWidth ? undefined : 'source-in',
+            maskComposite: props.fullWidth ? undefined : 'intersect',
             ...props.style,
         }) as CSSProperties,
 );

@@ -30,6 +30,40 @@ interface PixelforgeClientInterface
     public function listGenerations(array $params = []): array;
 
     /**
+     * Submit a new image generation request to Pixelforge.
+     *
+     * @param  array{
+     *     prompt: string,
+     *     size: string,
+     *     quality: string,
+     *     reference_images?: array<int, string>,
+     *     metadata?: array<string, string>
+     * }  $payload
+     * @return array<string, mixed>
+     *
+     * @throws PixelforgeException
+     */
+    public function createGeneration(array $payload, ?string $idempotencyKey = null): array;
+
+    /**
+     * Retrieve a single generation by its upstream provider ID.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws PixelforgeException
+     */
+    public function getGeneration(string $providerGenerationId): array;
+
+    /**
+     * Retrieve daily provider usage and billed USD costs from GET /v1/usage.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws PixelforgeException
+     */
+    public function getUsage(?string $startDate = null, ?string $endDate = null): array;
+
+    /**
      * Get the configured base URL.
      */
     public function getBaseUrl(): string;

@@ -79,4 +79,24 @@ class PixelforgeApiException extends PixelforgeException
     {
         return $this->statusCode === 422 || $this->errorCode === 'validation_failed';
     }
+
+    public function isConcurrencyLimit(): bool
+    {
+        return $this->errorCode === 'concurrency_limit_exceeded';
+    }
+
+    public function isDailyLimit(): bool
+    {
+        return $this->errorCode === 'daily_limit_exceeded';
+    }
+
+    public function isContentPolicyViolation(): bool
+    {
+        return $this->errorCode === 'content_policy_violation';
+    }
+
+    public function isIdempotencyReused(): bool
+    {
+        return $this->statusCode === 409 || $this->errorCode === 'idempotency_key_reused';
+    }
 }

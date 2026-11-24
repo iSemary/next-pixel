@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
-    BookOpen,
+    BarChart3,
     Code2,
     ExternalLink,
-    Layers,
-    Plus,
+    LayoutGrid,
     Settings,
     Wand2,
 } from '@lucide/vue';
@@ -22,55 +21,48 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
-    SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
-import { useGenerationStudio } from '@/composables/useGenerationStudio';
-import { dashboard, library } from '@/routes';
+import { dashboard, imageStudio } from '@/routes';
 import { edit as editProfile } from '@/routes/profile';
+import { index as reportsIndex } from '@/routes/admin/reports';
 
 const { isCurrentUrl, currentUrl } = useCurrentUrl();
-const { startNewGeneration } = useGenerationStudio();
 
-const isStudioActive = computed(() => {
-    return currentUrl.value === '/dashboard' || isCurrentUrl(dashboard());
+const isDashboardActive = computed(() => {
+    return (
+        currentUrl.value.startsWith('/dashboard') || isCurrentUrl(dashboard())
+    );
 });
 
-const isLibraryActive = computed(() => {
-    return currentUrl.value.startsWith('/library') || isCurrentUrl(library());
+const isStudioActive = computed(() => {
+    return (
+        currentUrl.value.startsWith('/image-studio') ||
+        isCurrentUrl(imageStudio())
+    );
 });
 
 const isSettingsActive = computed(() => {
     return currentUrl.value.startsWith('/settings');
 });
+
+const isReportsActive = computed(() => {
+    return (
+        currentUrl.value.startsWith('/admin/reports') ||
+        isCurrentUrl(reportsIndex())
+    );
+});
 </script>
 
 <template>
     <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader class="border-b border-sidebar-border/70 pb-3">
+        <SidebarHeader class="border-b border-sidebar-border/70 pb-2">
             <SidebarMenu>
-                <SidebarMenuItem class="flex items-center justify-between">
-                    <SidebarMenuButton size="lg" as-child class="flex-1">
+                <SidebarMenuItem>
+                    <SidebarMenuButton size="lg" as-child>
                         <Link :href="dashboard()">
                             <AppLogo />
                         </Link>
-                    </SidebarMenuButton>
-                    <SidebarTrigger
-                        class="ml-1 hidden shrink-0 group-data-[state=expanded]:flex"
-                    />
-                </SidebarMenuItem>
-            </SidebarMenu>
-
-            <!-- Prominent "New generation" Button -->
-            <SidebarMenu class="mt-2">
-                <SidebarMenuItem>
-                    <SidebarMenuButton
-                        tooltip="New generation"
-                        class="h-9 w-full cursor-pointer justify-center rounded-lg bg-primary font-semibold text-primary-foreground shadow-xs transition-all group-data-[collapsible=icon]:p-0 group-data-[state=expanded]:justify-start group-data-[state=expanded]:px-3 hover:bg-primary/90 hover:text-primary-foreground"
-                        @click="startNewGeneration"
-                    >
-                        <Plus class="h-4 w-4 shrink-0 stroke-[2.5]" />
-                        <span class="truncate">New generation</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -84,24 +76,24 @@ const isSettingsActive = computed(() => {
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             as-child
-                            :is-active="isStudioActive"
-                            tooltip="Image Studio"
+                            :is-active="isDashboardActive"
+                            tooltip="Dashboard"
                         >
                             <Link :href="dashboard()">
-                                <Wand2 class="h-4 w-4" />
-                                <span>Image Studio</span>
+                                <LayoutGrid class="h-4 w-4" />
+                                <span>Dashboard</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
                             as-child
-                            :is-active="isLibraryActive"
-                            tooltip="Library"
+                            :is-active="isStudioActive"
+                            tooltip="Image Studio"
                         >
-                            <Link :href="library()">
-                                <Layers class="h-4 w-4" />
-                                <span>Library</span>
+                            <Link :href="imageStudio()">
+                                <Wand2 class="h-4 w-4" />
+                                <span>Image Studio</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -126,23 +118,29 @@ const isSettingsActive = computed(() => {
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarGroup>
+
+            <!-- Reports Section -->
+            <SidebarGroup>
+                <SidebarGroupLabel>Reports</SidebarGroupLabel>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
+                            as-child
+                            :is-active="isReportsActive"
+                            tooltip="Admin Report"
+                        >
+                            <Link :href="reportsIndex()">
+                                <BarChart3 class="h-4 w-4" />
+                                <span>Admin Report</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter class="border-t border-sidebar-border/70 p-2">
             <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton as-child tooltip="API Documentation">
-                        <a
-                            href="https://pixelforge.promptedit.dev/docs"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <BookOpen class="h-4 w-4" />
-                            <span>API Documentation</span>
-                            <ExternalLink class="ml-auto h-3 w-3 opacity-60" />
-                        </a>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
                 <SidebarMenuItem>
                     <SidebarMenuButton as-child tooltip="GitHub Repository">
                         <a
@@ -151,8 +149,13 @@ const isSettingsActive = computed(() => {
                             rel="noopener noreferrer"
                         >
                             <Code2 class="h-4 w-4" />
-                            <span>GitHub Repository</span>
-                            <ExternalLink class="ml-auto h-3 w-3 opacity-60" />
+                            <span
+                                class="truncate group-data-[collapsible=icon]:hidden"
+                                >GitHub Repository</span
+                            >
+                            <ExternalLink
+                                class="ml-auto h-3 w-3 opacity-60 group-data-[collapsible=icon]:hidden"
+                            />
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

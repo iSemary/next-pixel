@@ -69,6 +69,95 @@ class PixelforgeClient implements PixelforgeClientInterface
     }
 
     /**
+     * Submit a new image generation request to Pixelforge.
+     *
+     * @param  array{
+     *     prompt: string,
+     *     size: string,
+     *     quality: string,
+     *     reference_images?: array<int, string>,
+     *     metadata?: array<string, string>
+     * }  $payload
+     * @return array<string, mixed>
+     *
+     * @throws PixelforgeException
+     */
+    public function createGeneration(array $payload, ?string $idempotencyKey = null): array
+    {
+        $headers = [];
+        if ($idempotencyKey !== null && $idempotencyKey !== '') {
+            $headers['Idempotency-Key'] = $idempotencyKey;
+        }
+
+        $response = $this->send('POST', 'generations', $payload, $headers);
+        $data = $response->json();
+
+        if (! is_array($data) || empty($data['id']) || ! is_string($data['id'])) {
+            throw new PixelforgeApiException(
+                message: 'Invalid response received from Pixelforge createGeneration endpoint.',
+                errorCode: 'invalid_response',
+                statusCode: $response->status(),
+                errorType: 'api_error',
+            );
+        }
+
+        return $data;
+    }
+
+    /**
+     * Retrieve a single generation by its upstream provider ID.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws PixelforgeException
+     */
+    public function getGeneration(string $providerGenerationId): array
+    {
+        $response = $this->send('GET', 'generations/'.ltrim($providerGenerationId, '/'));
+        $data = $response->json();
+
+        if (! is_array($data) || empty($data['id'])) {
+            throw new PixelforgeApiException(
+                message: 'Invalid response received from Pixelforge getGeneration endpoint.',
+                errorCode: 'invalid_response',
+                statusCode: $response->status(),
+                errorType: 'api_error',
+            );
+        }
+
+        return $data;
+    }
+
+    /**
+     * Retrieve daily provider usage and billed USD costs from GET /v1/usage.
+     *
+     * @return array<string, mixed>
+     *
+     * @throws PixelforgeException
+     */
+    public function getUsage(?string $startDate = null, ?string $endDate = null): array
+    {
+        $queryParams = array_filter([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ], fn (?string $val): bool => $val !== null && $val !== '');
+
+        $response = $this->send('GET', 'usage', $queryParams);
+        $data = $response->json();
+
+        if (! is_array($data)) {
+            throw new PixelforgeApiException(
+                message: 'Invalid response received from Pixelforge usage endpoint.',
+                errorCode: 'invalid_response',
+                statusCode: $response->status(),
+                errorType: 'api_error',
+            );
+        }
+
+        return $data;
+    }
+
+    /**
      * Get the configured base URL.
      */
     public function getBaseUrl(): string
@@ -104,15 +193,20 @@ class PixelforgeClient implements PixelforgeClientInterface
      * Send an HTTP request and handle connection / API errors.
      *
      * @param  array<string, mixed>  $queryOrData
+     * @param  array<string, string>  $headers
      *
      * @throws PixelforgeException
      */
-    protected function send(string $method, string $endpoint, array $queryOrData = []): Response
+    protected function send(string $method, string $endpoint, array $queryOrData = [], array $headers = []): Response
     {
         $cleanEndpoint = ltrim($endpoint, '/');
 
         try {
             $client = $this->http();
+
+            if (! empty($headers)) {
+                $client = $client->withHeaders($headers);
+            }
 
             $response = match (strtoupper($method)) {
                 'GET' => $client->get($cleanEndpoint, $queryOrData),

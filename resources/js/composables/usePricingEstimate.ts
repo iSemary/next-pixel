@@ -1,15 +1,17 @@
 import { computed, ref, watch, type Ref } from 'vue';
+import { postJson } from '@/lib/http';
+import { estimate as estimateRoute } from '@/routes/generations';
 import type {
     GenerationFormState,
     PricingEstimationResult,
 } from '@/types/generation';
 
-function getXsrfToken(): string | null {
-    if (typeof document === 'undefined') {
-        return null;
+export function formatUsdEstimate(value: number): string {
+    if (value < 0.01) {
+        return `$${value.toFixed(4)}`;
     }
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : null;
+
+    return `$${value.toFixed(4).replace(/0+$/, '').replace(/\.$/, '')}`;
 }
 
 export function usePricingEstimate(form: Ref<GenerationFormState>) {
@@ -43,11 +45,7 @@ export function usePricingEstimate(form: Ref<GenerationFormState>) {
         if (isNaN(numeric)) {
             return null;
         }
-        // If cost is tiny (< $0.01), format with 4 decimal places, else 2-4 decimal places
-        if (numeric < 0.01) {
-            return `$${numeric.toFixed(4)}`;
-        }
-        return `$${numeric.toFixed(4).replace(/0+$/, '').replace(/\.$/, '')}`;
+        return formatUsdEstimate(numeric);
     });
 
     const numGenerations = computed(() => form.value.numGenerations || 1);
@@ -62,10 +60,7 @@ export function usePricingEstimate(form: Ref<GenerationFormState>) {
         if (isNaN(numeric)) {
             return null;
         }
-        if (numeric < 0.01) {
-            return `$${numeric.toFixed(4)}`;
-        }
-        return `$${numeric.toFixed(4).replace(/0+$/, '').replace(/\.$/, '')}`;
+        return formatUsdEstimate(numeric);
     });
 
     /**
@@ -95,7 +90,6 @@ export function usePricingEstimate(form: Ref<GenerationFormState>) {
      * Fetch pricing estimate from backend.
      */
     const fetchEstimate = async () => {
-        // Abort previous in-flight request if any
         if (activeAbortController) {
             activeAbortController.abort();
             activeAbortController = null;
@@ -123,17 +117,6 @@ export function usePricingEstimate(form: Ref<GenerationFormState>) {
         error.value = null;
 
         try {
-            const xsrfToken = getXsrfToken();
-            const headers: Record<string, string> = {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-            };
-
-            if (xsrfToken) {
-                headers['X-XSRF-TOKEN'] = xsrfToken;
-            }
-
             const payload: Record<string, unknown> = {
                 prompt: promptText,
                 size: form.value.size,
@@ -144,37 +127,19 @@ export function usePricingEstimate(form: Ref<GenerationFormState>) {
                 payload.reference_images = cleanReferenceImages.value;
             }
 
-            const response = await fetch('/generations/estimate', {
-                method: 'POST',
-                headers,
-                credentials: 'same-origin',
-                body: JSON.stringify(payload),
-                signal,
-            });
+            const data = await postJson<PricingEstimationResult>(
+                estimateRoute.url(),
+                payload,
+                {
+                    signal,
+                    defaultErrorMessage: 'Estimate calculation failed',
+                },
+            );
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => null);
-                if (response.status === 422 && errorData?.errors) {
-                    const firstError = Object.values(
-                        errorData.errors,
-                    )[0] as string[];
-                    throw new Error(
-                        firstError?.[0] ||
-                            'Validation error while calculating estimate.',
-                    );
-                }
-                throw new Error(
-                    errorData?.message ||
-                        `Estimate calculation failed (${response.status})`,
-                );
-            }
-
-            const data: PricingEstimationResult = await response.json();
             estimate.value = data;
             error.value = null;
         } catch (err: unknown) {
             if (err instanceof DOMException && err.name === 'AbortError') {
-                // Request aborted because a newer change arrived; ignore
                 return;
             }
             const msg =
@@ -212,7 +177,6 @@ export function usePricingEstimate(form: Ref<GenerationFormState>) {
         }, 350);
     };
 
-    // Watch for changes in form state with deep equality
     watch(
         () => [
             form.value.prompt,

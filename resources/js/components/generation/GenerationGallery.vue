@@ -1,8 +1,45 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { ArrowUpRight, Image as ImageIcon } from '@lucide/vue';
+import { ArrowUpRight, Image as ImageIcon, Loader2 } from '@lucide/vue';
+import { computed, ref } from 'vue';
+import GenerationCard from '@/components/generation/GenerationCard.vue';
+import GenerationDetailDialog from '@/components/generation/GenerationDetailDialog.vue';
 import GenerationEmptyState from '@/components/generation/GenerationEmptyState.vue';
-import { library } from '@/routes';
+import { useGenerationPolling } from '@/composables/useGenerationPolling';
+import { useGenerationStudio } from '@/composables/useGenerationStudio';
+import { dashboard } from '@/routes';
+import type { GenerationItem } from '@/types/generation';
+
+const { submittedGenerations, mergeUpdatedGenerations } = useGenerationStudio();
+
+const selectedGenerationId = ref<number | null>(null);
+const isDetailOpen = ref(false);
+
+const { isPolling } = useGenerationPolling(
+    () => submittedGenerations.value,
+    (updated) => {
+        mergeUpdatedGenerations(updated);
+    },
+);
+
+const generationCount = computed(() => submittedGenerations.value.length);
+
+const selectedGeneration = computed<GenerationItem | null>(() => {
+    if (selectedGenerationId.value === null) {
+        return null;
+    }
+
+    return (
+        submittedGenerations.value.find(
+            (g) => g.id === selectedGenerationId.value,
+        ) ?? null
+    );
+});
+
+function openDetail(gen: GenerationItem): void {
+    selectedGenerationId.value = gen.id;
+    isDetailOpen.value = true;
+}
 </script>
 
 <template>
@@ -19,33 +56,60 @@ import { library } from '@/routes';
                 >
                     <ImageIcon class="h-4 w-4" />
                 </div>
-                <div>
+                <div class="flex items-center gap-2.5">
                     <h2
                         class="font-bricolage text-base font-semibold tracking-tight text-foreground"
                     >
                         Generation Gallery
                     </h2>
+                    <span
+                        v-if="isPolling"
+                        class="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary"
+                    >
+                        <Loader2 class="h-3 w-3 animate-spin" />
+                        Live
+                    </span>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <Link
-                    :href="library()"
+                    :href="dashboard()"
                     class="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
                 >
-                    <span>View library</span>
+                    <span>View all</span>
                     <ArrowUpRight class="h-3.5 w-3.5" />
                 </Link>
 
                 <span
                     class="rounded-full bg-muted/80 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground"
                 >
-                    0 generations
+                    {{ generationCount }} generation{{
+                        generationCount === 1 ? '' : 's'
+                    }}
                 </span>
             </div>
         </div>
 
-        <!-- Gallery Body (Empty State for Step 06) -->
-        <GenerationEmptyState />
+        <!-- Gallery Body -->
+        <div
+            v-if="generationCount > 0"
+            class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        >
+            <GenerationCard
+                v-for="gen in submittedGenerations"
+                :key="gen.id"
+                :generation="gen"
+                @select="openDetail"
+            />
+        </div>
+
+        <!-- Empty State -->
+        <GenerationEmptyState v-else />
+
+        <GenerationDetailDialog
+            v-model:open="isDetailOpen"
+            :generation="selectedGeneration"
+        />
     </div>
 </template>

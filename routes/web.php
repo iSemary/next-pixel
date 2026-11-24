@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\CreditsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GenerationController;
 use App\Http\Controllers\GenerationEstimateController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\ReferenceImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -23,15 +26,29 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('library', [LibraryController::class, 'index'])->name('library');
+    Route::get('dashboard', [LibraryController::class, 'index'])->name('dashboard');
+    Route::get('image-studio', [DashboardController::class, 'index'])->name('image-studio');
+    Route::get('admin/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
+    Route::redirect('reports', '/admin/reports');
     Route::post('logout', [WebAuthController::class, 'logout'])->name('logout');
     Route::post('credits/top-up', [CreditsController::class, 'topUp'])
         ->middleware('throttle:30,1')
         ->name('credits.top-up');
+    Route::get('generations', [GenerationController::class, 'index'])
+        ->middleware('throttle:120,1')
+        ->name('generations.index');
+    Route::post('generations', [GenerationController::class, 'store'])
+        ->middleware('throttle:30,1')
+        ->name('generations.store');
+    Route::get('generations/{generation}', [GenerationController::class, 'show'])
+        ->middleware('throttle:120,1')
+        ->name('generations.show');
     Route::post('generations/estimate', [GenerationEstimateController::class, 'estimate'])
         ->middleware('throttle:60,1')
         ->name('generations.estimate');
+    Route::post('generations/reference-images', [ReferenceImageController::class, 'store'])
+        ->middleware('throttle:30,1')
+        ->name('generations.reference-images.store');
 });
 
 require __DIR__.'/settings.php';

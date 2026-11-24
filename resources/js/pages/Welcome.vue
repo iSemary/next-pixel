@@ -1,13 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import {
-    Activity,
-    ArrowRight,
-    Check,
-    Coins,
-    Sparkles,
-    Wand2,
-} from '@lucide/vue';
+import { Activity, ArrowRight, Coins, Wand2 } from '@lucide/vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import AuthModal from '@/components/AuthModal.vue';
@@ -28,13 +21,32 @@ const handleScroll = () => {
     isScrolled.value = window.scrollY > 20;
 };
 
+const driftWallColumns = ref(8);
+const updateDriftWallColumns = () => {
+    if (typeof window === 'undefined') return;
+    if (window.innerWidth >= 1536) {
+        driftWallColumns.value = 9;
+    } else if (window.innerWidth >= 1024) {
+        driftWallColumns.value = 8;
+    } else if (window.innerWidth >= 640) {
+        driftWallColumns.value = 6;
+    } else {
+        driftWallColumns.value = 4;
+    }
+};
+
 onMounted(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', updateDriftWallColumns, {
+        passive: true,
+    });
     isScrolled.value = window.scrollY > 20;
+    updateDriftWallColumns();
 });
 
 onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
+    window.removeEventListener('resize', updateDriftWallColumns);
 });
 
 const openLoginModal = () => {
@@ -151,23 +163,14 @@ const features = [
     {
         icon: Wand2,
         title: 'AI-Powered Image Generation',
-        description:
-            'Transform natural language prompts into stunning visual concepts with fine-grained control over aspect ratios and creative direction.',
-        badge: 'Creative AI Engine',
     },
     {
         icon: Coins,
         title: 'Transparent Usage-Based Pricing',
-        description:
-            'Know the exact cost before you generate. Clear per-image token pricing with no recurring subscriptions or hidden lock-ins.',
-        badge: 'Upfront Estimation',
     },
     {
         icon: Activity,
         title: 'Real-Time Generation Tracking',
-        description:
-            'Monitor every step from pipeline submission to high-resolution render with live progress metrics and latency status.',
-        badge: 'Live Progress',
     },
 ];
 
@@ -314,11 +317,11 @@ const steps = [
             </div>
         </header>
 
-        <!-- Hero Section with Pattern Waves Background -->
-        <section class="relative overflow-hidden pt-12 pb-24 lg:pt-20 lg:pb-36">
-            <!-- Pattern Waves Animated Background (vue-bits.dev/backgrounds/pattern-waves) -->
+        <!-- Seamless Hero + Features + How It Works Canvas -->
+        <div class="relative overflow-hidden bg-background">
+            <!-- Pattern Waves Animated Background extending softly into Features -->
             <div
-                class="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+                class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[560px] overflow-hidden sm:h-[620px] lg:h-[680px]"
                 aria-hidden="true"
             >
                 <PatternWaves
@@ -331,332 +334,283 @@ const steps = [
                     "
                     :opacity="resolvedAppearance === 'dark' ? 0.45 : 0.28"
                     fade="bottom"
-                    :fade-size="0.6"
+                    :fade-size="0.65"
                     :speed="0.3"
                     :scale="1.0"
                     :interactive="true"
                     class="h-full w-full"
                 />
+
+                <!-- Soft Radial & Bottom Gradient Overlays fading seamlessly into background -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-b from-background/30 via-background/70 via-70% to-background dark:from-background/40 dark:via-background/75 dark:via-70% dark:to-background"
+                ></div>
+                <div
+                    class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,var(--color-background)_80%)]"
+                ></div>
             </div>
 
-            <!-- Soft Radial & Bottom Gradient Overlays keeping headline & text razor-sharp -->
-            <div
-                class="pointer-events-none absolute inset-0 z-1 bg-gradient-to-b from-background/30 via-background/70 to-background dark:from-background/40 dark:via-background/75 dark:to-background"
-                aria-hidden="true"
-            ></div>
-            <div
-                class="pointer-events-none absolute inset-0 z-1 bg-[radial-gradient(ellipse_at_center,transparent_25%,var(--color-background)_80%)]"
-                aria-hidden="true"
-            ></div>
-
-            <!-- Hero Main Foreground Content -->
-            <div class="relative z-10 container mx-auto max-w-5xl px-4 sm:px-6">
-                <div class="flex flex-col items-center text-center">
-                    <!-- Headline: Oversized, bold, tight letter spacing -->
-                    <h1
-                        class="font-bricolage text-5xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-6xl md:text-7xl lg:text-8xl"
-                    >
-                        <span class="block text-foreground">Imagine it.</span>
-                        <span
-                            class="mt-1 block bg-gradient-to-r from-[#3F6212] via-[#16A34A] to-[#059669] bg-clip-text text-transparent [text-shadow:none] dark:from-[#A3E600] dark:via-[#4ADE80] dark:to-[#059669] dark:[text-shadow:0_0_35px_rgba(163,230,0,0.35)]"
+            <!-- Hero Section foreground -->
+            <section
+                class="relative z-10 pt-12 pb-10 sm:pb-12 lg:pt-20 lg:pb-14"
+            >
+                <div class="container mx-auto max-w-5xl px-4 sm:px-6">
+                    <div class="flex flex-col items-center text-center">
+                        <!-- Headline: Oversized, bold, tight letter spacing -->
+                        <h1
+                            class="font-bricolage text-5xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-6xl md:text-7xl lg:text-8xl"
                         >
-                            Generate it.
-                        </span>
-                    </h1>
-
-                    <!-- Description -->
-                    <p
-                        class="mt-6 max-w-2xl text-base text-balance text-secondary-foreground sm:text-lg md:text-xl dark:text-muted-foreground"
-                    >
-                        Turn your ideas into images with AI. Simple tools.
-                        Transparent pricing. No surprises.
-                    </p>
-
-                    <!-- CTA Buttons -->
-                    <div
-                        class="mt-10 flex flex-wrap items-center justify-center gap-4"
-                    >
-                        <template v-if="$page.props.auth?.user">
-                            <Button
-                                size="lg"
-                                as-child
-                                class="h-12 cursor-pointer bg-[#A3E600] px-8 text-base font-semibold text-[#171717] shadow-xs transition-all duration-200 hover:bg-[#b2f500] hover:shadow-md dark:shadow-[0_0_24px_rgba(163,230,0,0.38)] dark:hover:shadow-[0_0_36px_rgba(163,230,0,0.55)]"
+                            <span class="block text-foreground"
+                                >Imagine it.</span
                             >
-                                <Link :href="dashboard()">
+                            <span
+                                class="mt-1 block bg-gradient-to-r from-[#3F6212] via-[#16A34A] to-[#059669] bg-clip-text text-transparent [text-shadow:none] dark:from-[#A3E600] dark:via-[#4ADE80] dark:to-[#059669] dark:[text-shadow:0_0_35px_rgba(163,230,0,0.35)]"
+                            >
+                                Generate it.
+                            </span>
+                        </h1>
+
+                        <!-- Description -->
+                        <p
+                            class="mt-6 max-w-2xl text-base text-balance text-secondary-foreground sm:text-lg md:text-xl dark:text-muted-foreground"
+                        >
+                            Turn your ideas into images with AI. Simple tools.
+                            Transparent pricing. No surprises.
+                        </p>
+
+                        <!-- CTA Buttons -->
+                        <div
+                            class="mt-10 flex flex-wrap items-center justify-center gap-4"
+                        >
+                            <template v-if="$page.props.auth?.user">
+                                <Button
+                                    size="lg"
+                                    as-child
+                                    class="h-12 cursor-pointer bg-[#A3E600] px-8 text-base font-semibold text-[#171717] shadow-xs transition-all duration-200 hover:bg-[#b2f500] hover:shadow-md dark:shadow-[0_0_24px_rgba(163,230,0,0.38)] dark:hover:shadow-[0_0_36px_rgba(163,230,0,0.55)]"
+                                >
+                                    <Link :href="dashboard()">
+                                        Start creating
+                                        <ArrowRight class="ml-2 h-4 w-4" />
+                                    </Link>
+                                </Button>
+                            </template>
+                            <template v-else>
+                                <Button
+                                    size="lg"
+                                    class="h-12 cursor-pointer bg-[#A3E600] px-8 text-base font-semibold text-[#171717] shadow-xs transition-all duration-200 hover:bg-[#b2f500] hover:shadow-md dark:shadow-[0_0_24px_rgba(163,230,0,0.38)] dark:hover:shadow-[0_0_36px_rgba(163,230,0,0.55)]"
+                                    @click="openRegisterModal"
+                                >
                                     Start creating
                                     <ArrowRight class="ml-2 h-4 w-4" />
-                                </Link>
-                            </Button>
-                        </template>
-                        <template v-else>
-                            <Button
-                                size="lg"
-                                class="h-12 cursor-pointer bg-[#A3E600] px-8 text-base font-semibold text-[#171717] shadow-xs transition-all duration-200 hover:bg-[#b2f500] hover:shadow-md dark:shadow-[0_0_24px_rgba(163,230,0,0.38)] dark:hover:shadow-[0_0_36px_rgba(163,230,0,0.55)]"
-                                @click="openRegisterModal"
-                            >
-                                Start creating
-                                <ArrowRight class="ml-2 h-4 w-4" />
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                class="h-12 cursor-pointer border-border/80 bg-card/80 px-8 text-base font-medium text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-secondary dark:border-[#404040]/80 dark:bg-background/60 dark:hover:border-[#A3E600]/60 dark:hover:bg-muted/50"
-                                @click="scrollTo('how-it-works')"
-                            >
-                                How it works
-                            </Button>
-                        </template>
-                    </div>
-
-                    <!-- Trust / Transparency Micro-Badges -->
-                    <div
-                        class="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary-foreground dark:text-muted-foreground"
-                    >
-                        <div class="flex items-center gap-1.5">
-                            <Check
-                                class="h-3.5 w-3.5 text-[#3F6212] dark:text-[#A3E600]"
-                            />
-                            <span>Transparent Pay-As-You-Go</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <Check
-                                class="h-3.5 w-3.5 text-[#3F6212] dark:text-[#A3E600]"
-                            />
-                            <span>Instant Generation Tracking</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <Check
-                                class="h-3.5 w-3.5 text-[#3F6212] dark:text-[#A3E600]"
-                            />
-                            <span>No Hidden Subscriptions</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Feature Section: Full-Width Drift Wall & 3 Minimal Cards -->
-        <section
-            id="features"
-            class="scroll-mt-20 border-t border-border bg-secondary/50 py-20 lg:py-28 dark:border-[#404040]/40 dark:bg-surface/30"
-        >
-            <div class="container mx-auto max-w-6xl px-4 sm:px-6">
-                <!-- Section Header -->
-                <div class="mx-auto mb-14 max-w-2xl text-center">
-                    <h2
-                        class="font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
-                    >
-                        Designed for creators. Built for clarity.
-                    </h2>
-                    <p
-                        class="mt-3 text-sm text-secondary-foreground sm:text-base dark:text-muted-foreground"
-                    >
-                        NextPixel strips away friction so you can focus purely
-                        on ideation, precision, and predictable costs.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Full-Width 3D Drift Wall Showcase -->
-            <div class="relative mb-16 w-full overflow-hidden sm:mb-20">
-                <div class="h-[400px] w-full sm:h-[460px] md:h-[520px]">
-                    <DriftWall
-                        :items="driftWallItems"
-                        :columns="6"
-                        :tile-width="240"
-                        :tile-height="160"
-                        :gap="18"
-                        :radius="14"
-                        :tilt="12"
-                        :turn="-10"
-                        :speed="36"
-                        :depth="140"
-                        :pause-on-hover="true"
-                        :overlay-color="
-                            resolvedAppearance === 'dark'
-                                ? '#000000'
-                                : '#ffffff'
-                        "
-                        class="h-full w-full"
-                    />
-                </div>
-
-                <!-- Edge Gradient Fades for Seamless Viewport Blending -->
-                <div
-                    class="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-secondary/80 to-transparent sm:w-36 dark:from-[#1c1c1c]/90"
-                    aria-hidden="true"
-                ></div>
-                <div
-                    class="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-secondary/80 to-transparent sm:w-36 dark:from-[#1c1c1c]/90"
-                    aria-hidden="true"
-                ></div>
-            </div>
-
-            <div class="container mx-auto max-w-6xl px-4 sm:px-6">
-                <!-- 3 Feature Cards Grid -->
-                <div class="grid gap-6 md:grid-cols-3">
-                    <div
-                        v-for="feature in features"
-                        :key="feature.title"
-                        class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-xs backdrop-blur-md transition-all duration-300 hover:border-[#3F6212]/30 hover:shadow-md dark:border-[#404040]/60 dark:bg-[#242424]/70 dark:shadow-sm dark:hover:border-[#A3E600]/50 dark:hover:shadow-[0_0_24px_rgba(163,230,0,0.12)]"
-                    >
-                        <div>
-                            <!-- Lime-colored Lucide Icon Container with soft background in light mode -->
-                            <div
-                                class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-[#A3E600]/40 bg-[#A3E600]/15 text-[#3F6212] shadow-xs transition-colors duration-200 group-hover:border-[#3F6212]/30 dark:border-[#404040]/70 dark:bg-[#2B2B2B] dark:text-[#A3E600] dark:group-hover:border-[#A3E600]/40"
-                            >
-                                <component :is="feature.icon" class="h-6 w-6" />
-                            </div>
-
-                            <h3
-                                class="font-bricolage text-lg font-bold text-foreground"
-                            >
-                                {{ feature.title }}
-                            </h3>
-                            <p
-                                class="mt-2.5 text-sm leading-relaxed text-secondary-foreground dark:text-muted-foreground"
-                            >
-                                {{ feature.description }}
-                            </p>
-                        </div>
-
-                        <!-- Card Footer Tag -->
-                        <div
-                            class="mt-6 border-t border-border pt-4 dark:border-[#404040]/40"
-                        >
-                            <span
-                                class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#3F6212] dark:text-[#A3E600]"
-                            >
-                                <Sparkles
-                                    class="h-3 w-3 text-[#3F6212] dark:text-[#A3E600]"
-                                />
-                                {{ feature.badge }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- How It Works Section: 3 Simple Steps -->
-        <section
-            id="how-it-works"
-            class="scroll-mt-20 border-t border-border bg-background py-20 lg:py-28 dark:border-[#404040]/40"
-        >
-            <div class="container mx-auto max-w-6xl px-4 sm:px-6">
-                <!-- Section Header -->
-                <div class="mx-auto mb-16 max-w-2xl text-center">
-                    <h2
-                        class="font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
-                    >
-                        How it works
-                    </h2>
-                    <p
-                        class="mt-3 text-sm text-secondary-foreground sm:text-base dark:text-muted-foreground"
-                    >
-                        From a spark of imagination to production-ready artwork
-                        in three seamless steps.
-                    </p>
-                </div>
-
-                <!-- 3 Steps Grid -->
-                <div class="grid gap-6 md:grid-cols-3">
-                    <div
-                        v-for="item in steps"
-                        :key="item.step"
-                        class="relative flex flex-col justify-between rounded-2xl border border-border bg-card p-7 shadow-xs backdrop-blur-md transition-all duration-300 hover:border-foreground/20 hover:shadow-md dark:border-[#404040]/60 dark:bg-[#242424]/60 dark:shadow-none dark:hover:border-[#404040]"
-                    >
-                        <div>
-                            <!-- Step Number with high contrast in light mode and subtle glow in dark mode -->
-                            <div class="mb-4">
-                                <span
-                                    class="font-bricolage text-3xl font-extrabold text-[#3F6212] [text-shadow:none] dark:text-[#A3E600] dark:[text-shadow:0_0_15px_rgba(163,230,0,0.3)]"
+                                </Button>
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    class="h-12 cursor-pointer border-border/80 bg-card/80 px-8 text-base font-medium text-foreground transition-all duration-200 hover:border-foreground/20 hover:bg-secondary dark:border-[#404040]/80 dark:bg-background/60 dark:hover:border-[#A3E600]/60 dark:hover:bg-muted/50"
+                                    @click="scrollTo('how-it-works')"
                                 >
-                                    {{ item.step }}
-                                </span>
-                            </div>
-
-                            <h3
-                                class="font-bricolage text-lg font-bold text-foreground"
-                            >
-                                {{ item.title }}
-                            </h3>
-                            <p
-                                class="mt-2 text-sm leading-relaxed text-secondary-foreground dark:text-muted-foreground"
-                            >
-                                {{ item.description }}
-                            </p>
+                                    How it works
+                                </Button>
+                            </template>
                         </div>
+                    </div>
+                </div>
+            </section>
 
-                        <!-- Micro UI Preview depending on step -->
-                        <div
-                            class="mt-6 border-t border-border pt-4 dark:border-[#404040]/40"
+            <!-- Feature Section: Compact Pill Badges & Full-Width Drift Wall -->
+            <section
+                id="features"
+                class="relative z-10 scroll-mt-20 pt-4 pb-4 sm:pb-6 lg:pt-6 lg:pb-8"
+            >
+                <div class="container mx-auto max-w-6xl px-4 sm:px-6">
+                    <!-- Section Header -->
+                    <div class="mx-auto max-w-2xl text-center">
+                        <h2
+                            class="font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
                         >
-                            <!-- Step 1 snippet: Prompt bar -->
-                            <div
-                                v-if="item.samplePrompt"
-                                class="rounded-lg border border-border bg-secondary p-3 text-xs font-medium text-secondary-foreground italic dark:border-[#404040]/60 dark:bg-[#1A1A1A] dark:text-muted-foreground"
-                            >
-                                {{ item.samplePrompt }}
-                            </div>
+                            Designed for creators. Built for clarity.
+                        </h2>
+                        <p
+                            class="mt-3 text-sm text-secondary-foreground sm:text-base dark:text-muted-foreground"
+                        >
+                            NextPixel strips away friction so you can focus
+                            purely on ideation, precision, and predictable
+                            costs.
+                        </p>
+                    </div>
 
-                            <!-- Step 2 snippet: Price breakdown -->
-                            <div
-                                v-else-if="item.sampleMeta"
-                                class="grid grid-cols-3 gap-2"
-                            >
-                                <div
-                                    v-for="meta in item.sampleMeta"
-                                    :key="meta.label"
-                                    class="rounded-lg border border-border bg-secondary p-2 text-center dark:border-[#404040]/60 dark:bg-[#1A1A1A]"
+                    <!-- Compact Feature Badges -->
+                    <div
+                        class="mt-7 mb-10 flex flex-wrap items-center justify-center gap-2.5 sm:mb-12 sm:gap-3"
+                    >
+                        <div
+                            v-for="feature in features"
+                            :key="feature.title"
+                            class="inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface-elevated/90 px-4 py-2 text-xs font-medium text-foreground shadow-xs transition-colors duration-200 hover:border-[#3F6212]/30 hover:bg-card sm:text-sm dark:border-[#404040]/70 dark:bg-[#242424]/80 dark:hover:border-[#A3E600]/40 dark:hover:bg-[#2B2B2B]"
+                        >
+                            <component
+                                :is="feature.icon"
+                                class="h-4 w-4 shrink-0 text-[#3F6212] dark:text-[#A3E600]"
+                            />
+                            <span>{{ feature.title }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full-Width 3D Drift Wall Showcase -->
+                <div class="relative w-full overflow-hidden">
+                    <div class="h-[400px] w-full sm:h-[460px] md:h-[520px]">
+                        <DriftWall
+                            :items="driftWallItems"
+                            :columns="driftWallColumns"
+                            :tile-width="240"
+                            :tile-height="160"
+                            :gap="18"
+                            :radius="14"
+                            :tilt="12"
+                            :turn="-10"
+                            :speed="36"
+                            :depth="140"
+                            :pause-on-hover="true"
+                            :full-width="true"
+                            :overlay-color="
+                                resolvedAppearance === 'dark'
+                                    ? '#000000'
+                                    : '#ffffff'
+                            "
+                            class="h-full w-full"
+                        />
+                    </div>
+                    <!-- Soft bottom gradient fading DriftWall naturally into How It Works -->
+                    <div
+                        class="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-20 bg-gradient-to-t from-background via-background/70 to-transparent sm:h-28"
+                        aria-hidden="true"
+                    ></div>
+                </div>
+            </section>
+
+            <!-- How It Works Section: 3 Simple Steps -->
+            <section
+                id="how-it-works"
+                class="relative z-10 scroll-mt-20 pt-6 pb-20 sm:pt-8 lg:pt-10 lg:pb-24"
+            >
+                <div class="container mx-auto max-w-6xl px-4 sm:px-6">
+                    <!-- Section Header -->
+                    <div class="mx-auto mb-16 max-w-2xl text-center">
+                        <h2
+                            class="font-bricolage text-3xl font-bold tracking-tight text-foreground sm:text-4xl"
+                        >
+                            How it works
+                        </h2>
+                        <p
+                            class="mt-3 text-sm text-secondary-foreground sm:text-base dark:text-muted-foreground"
+                        >
+                            From a spark of imagination to production-ready
+                            artwork in three seamless steps.
+                        </p>
+                    </div>
+
+                    <!-- 3 Steps Grid -->
+                    <div class="grid gap-6 md:grid-cols-3">
+                        <div
+                            v-for="item in steps"
+                            :key="item.step"
+                            class="relative flex flex-col justify-between rounded-2xl border border-border bg-card p-7 shadow-xs backdrop-blur-md transition-all duration-300 hover:border-foreground/20 hover:shadow-md dark:border-[#404040]/60 dark:bg-[#242424]/60 dark:shadow-none dark:hover:border-[#404040]"
+                        >
+                            <div>
+                                <!-- Step Number with high contrast in light mode and subtle glow in dark mode -->
+                                <div class="mb-4">
+                                    <span
+                                        class="font-bricolage text-3xl font-extrabold text-[#3F6212] [text-shadow:none] dark:text-[#A3E600] dark:[text-shadow:0_0_15px_rgba(163,230,0,0.3)]"
+                                    >
+                                        {{ item.step }}
+                                    </span>
+                                </div>
+
+                                <h3
+                                    class="font-bricolage text-lg font-bold text-foreground"
                                 >
-                                    <span
-                                        class="block text-[10px] text-muted-foreground"
-                                        >{{ meta.label }}</span
-                                    >
-                                    <span
-                                        class="block text-xs font-semibold text-foreground"
-                                        >{{ meta.val }}</span
-                                    >
-                                </div>
+                                    {{ item.title }}
+                                </h3>
+                                <p
+                                    class="mt-2 text-sm leading-relaxed text-secondary-foreground dark:text-muted-foreground"
+                                >
+                                    {{ item.description }}
+                                </p>
                             </div>
 
-                            <!-- Step 3 snippet: Real-time progress -->
+                            <!-- Micro UI Preview depending on step -->
                             <div
-                                v-else-if="item.sampleStatus"
-                                class="rounded-lg border border-border bg-secondary p-3 text-xs dark:border-[#404040]/60 dark:bg-[#1A1A1A]"
+                                class="mt-6 border-t border-border pt-4 dark:border-[#404040]/40"
                             >
-                                <div class="flex items-center justify-between">
-                                    <span
-                                        class="font-semibold text-[#3F6212] dark:text-[#A3E600]"
-                                        >100% Rendered</span
-                                    >
-                                    <span
-                                        class="text-secondary-foreground dark:text-muted-foreground"
-                                        >Time:
-                                        {{ item.sampleStatus.time }}</span
-                                    >
-                                </div>
+                                <!-- Step 1 snippet: Prompt bar -->
                                 <div
-                                    class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border dark:bg-[#2B2B2B]"
+                                    v-if="item.samplePrompt"
+                                    class="rounded-lg border border-border bg-secondary p-3 text-xs font-medium text-secondary-foreground italic dark:border-[#404040]/60 dark:bg-[#1A1A1A] dark:text-muted-foreground"
+                                >
+                                    {{ item.samplePrompt }}
+                                </div>
+
+                                <!-- Step 2 snippet: Price breakdown -->
+                                <div
+                                    v-else-if="item.sampleMeta"
+                                    class="grid grid-cols-3 gap-2"
                                 >
                                     <div
-                                        class="h-full w-full rounded-full bg-gradient-to-r from-[#A3E600] to-[#10B981]"
-                                    ></div>
+                                        v-for="meta in item.sampleMeta"
+                                        :key="meta.label"
+                                        class="rounded-lg border border-border bg-secondary p-2 text-center dark:border-[#404040]/60 dark:bg-[#1A1A1A]"
+                                    >
+                                        <span
+                                            class="block text-[10px] text-muted-foreground"
+                                            >{{ meta.label }}</span
+                                        >
+                                        <span
+                                            class="block text-xs font-semibold text-foreground"
+                                            >{{ meta.val }}</span
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Step 3 snippet: Real-time progress -->
+                                <div
+                                    v-else-if="item.sampleStatus"
+                                    class="rounded-lg border border-border bg-secondary p-3 text-xs dark:border-[#404040]/60 dark:bg-[#1A1A1A]"
+                                >
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span
+                                            class="font-semibold text-[#3F6212] dark:text-[#A3E600]"
+                                            >100% Rendered</span
+                                        >
+                                        <span
+                                            class="text-secondary-foreground dark:text-muted-foreground"
+                                            >Time:
+                                            {{ item.sampleStatus.time }}</span
+                                        >
+                                    </div>
+                                    <div
+                                        class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border dark:bg-[#2B2B2B]"
+                                    >
+                                        <div
+                                            class="h-full w-full rounded-full bg-gradient-to-r from-[#A3E600] to-[#10B981]"
+                                        ></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
 
         <!-- Final CTA Section: Soft Lime & Emerald Waves (Adaptive Light & Dark Modes) -->
         <section
             class="container mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 md:py-20"
         >
             <div
-                class="relative overflow-hidden rounded-3xl bg-white px-6 py-12 text-center shadow-xl shadow-zinc-200/50 sm:px-12 sm:py-16 md:py-20 dark:bg-[#121418] dark:shadow-[0_0_50px_rgba(0,0,0,0.6)]"
+                class="relative overflow-hidden rounded-3xl bg-white px-6 py-12 text-center shadow-xl shadow-zinc-200/50 sm:px-12 sm:py-16 md:py-20 dark:bg-[#121418] dark:shadow-none"
             >
                 <!-- Subtle Grain Texture Overlay for Visual Depth -->
                 <div

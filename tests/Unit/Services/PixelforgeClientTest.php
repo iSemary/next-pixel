@@ -249,4 +249,133 @@ class PixelforgeClientTest extends TestCase
         $this->assertSame('https://custom.api.dev/v1', $resolved->getBaseUrl());
         $this->assertTrue($resolved->hasApiKey());
     }
+
+    public function test_create_generation_sends_post_request_with_idempotency_key_header(): void
+    {
+        Http::fake([
+            'https://pixelforge.promptedit.dev/v1/generations' => Http::response([
+                'id' => 'gen_01HXYZTEST12345',
+                'status' => 'queued',
+                'prompt' => 'A serene mountain lake at sunrise',
+                'size' => '1024x1024',
+                'quality' => 'medium',
+                'reference_images' => [],
+                'metadata' => ['nextpixel_id' => '42'],
+                'created_at' => '2026-11-24T12:00:00Z',
+            ], 202),
+        ]);
+
+        $response = $this->client->createGeneration([
+            'prompt' => 'A serene mountain lake at sunrise',
+            'size' => '1024x1024',
+            'quality' => 'medium',
+            'reference_images' => [],
+            'metadata' => ['nextpixel_id' => '42'],
+        ], idempotencyKey: 'idemp-uuid-12345');
+
+        $this->assertSame('gen_01HXYZTEST12345', $response['id']);
+        $this->assertSame('queued', $response['status']);
+
+        Http::assertSent(function (Request $request) {
+            return $request->url() === 'https://pixelforge.promptedit.dev/v1/generations'
+                && $request->method() === 'POST'
+                && $request->header('Idempotency-Key')[0] === 'idemp-uuid-12345'
+                && $request['prompt'] === 'A serene mountain lake at sunrise'
+                && $request['size'] === '1024x1024';
+        });
+    }
+
+    public function test_create_generation_handles_429_concurrency_limit_with_retry_after(): void
+    {
+        Http::fake([
+            'https://pixelforge.promptedit.dev/v1/generations' => Http::response([
+                'error' => [
+                    'code' => 'concurrency_limit_exceeded',
+                    'message' => 'Account concurrency limit of 3 in-flight generations reached. Retry in 5s.',
+                    'type' => 'rate_limit_error',
+                ],
+            ], 429, ['Retry-After' => '5']),
+        ]);
+
+        try {
+            $this->client->createGeneration([
+                'prompt' => 'City lights at dusk',
+                'size' => '1536x1024',
+                'quality' => 'high',
+            ]);
+            $this->fail('Expected PixelforgeApiException was not thrown.');
+        } catch (PixelforgeApiException $e) {
+            $this->assertSame(429, $e->getStatusCode());
+            $this->assertSame('concurrency_limit_exceeded', $e->getErrorCode());
+            $this->assertSame(5, $e->getRetryAfter());
+            $this->assertTrue($e->isRateLimited());
+            $this->assertTrue($e->isConcurrencyLimit());
+        }
+    }
+
+    public function test_create_generation_handles_400_content_policy_violation(): void
+    {
+        Http::fake([
+            'https://pixelforge.promptedit.dev/v1/generations' => Http::response([
+                'error' => [
+                    'code' => 'content_policy_violation',
+                    'message' => 'The prompt violated safety content guidelines.',
+                    'type' => 'invalid_request_error',
+                ],
+            ], 400),
+        ]);
+
+        try {
+            $this->client->createGeneration([
+                'prompt' => '[blocked] unsafe prompt content',
+                'size' => '1024x1024',
+                'quality' => 'low',
+            ]);
+            $this->fail('Expected PixelforgeApiException was not thrown.');
+        } catch (PixelforgeApiException $e) {
+            $this->assertSame(400, $e->getStatusCode());
+            $this->assertSame('content_policy_violation', $e->getErrorCode());
+            $this->assertTrue($e->isContentPolicyViolation());
+        }
+    }
+
+    public function test_get_usage_requests_usage_endpoint_with_date_range(): void
+    {
+        Http::fake([
+            'https://pixelforge.promptedit.dev/v1/usage*' => Http::response([
+                'object' => 'usage',
+                'start_date' => '2026-11-01',
+                'end_date' => '2026-11-02',
+                'data' => [
+                    [
+                        'date' => '2026-11-01',
+                        'generations' => 3,
+                        'input_text_tokens' => 41,
+                        'input_image_tokens' => 0,
+                        'output_tokens' => 3300,
+                        'reasoning_tokens' => 2950,
+                        'cost_usd' => '0.169080000',
+                    ],
+                ],
+                'total' => [
+                    'generations' => 3,
+                    'input_text_tokens' => 41,
+                    'input_image_tokens' => 0,
+                    'output_tokens' => 3300,
+                    'reasoning_tokens' => 2950,
+                    'cost_usd' => '0.169080000',
+                ],
+            ], 200),
+        ]);
+
+        $usage = $this->client->getUsage('2026-11-01', '2026-11-02');
+
+        $this->assertSame('usage', $usage['object']);
+        $this->assertSame('0.169080000', $usage['total']['cost_usd']);
+
+        Http::assertSent(function (Request $request): bool {
+            return $request->hasHeader('Authorization', 'Bearer test_api_key_123')
+                && $request->url() === 'https://pixelforge.promptedit.dev/v1/usage?start_date=2026-11-01&end_date=2026-11-02';
+        });
+    }
 }

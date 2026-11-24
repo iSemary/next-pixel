@@ -55,22 +55,24 @@ class PricingEstimationService implements PricingEstimationServiceInterface
         $outputRate = (string) $rates['output_tokens'];
         $reasoningRate = (string) $rates['reasoning_tokens'];
 
-        $textCost = $this->calculateCategoryCost($maxTextTokens, $textRate);
-        $imageCost = $this->calculateCategoryCost($imageTokens, $imageRate);
-        $outputCost = $this->calculateCategoryCost($outputTokens, $outputRate);
-        $reasoningCost = $this->calculateCategoryCost($reasoningTokens, $reasoningRate);
+        $textCost = TokenCostCalculator::categoryCost($maxTextTokens, $textRate);
+        $imageCost = TokenCostCalculator::categoryCost($imageTokens, $imageRate);
+        $outputCost = TokenCostCalculator::categoryCost($outputTokens, $outputRate);
+        $reasoningCost = TokenCostCalculator::categoryCost($reasoningTokens, $reasoningRate);
 
         // Total Provider Cost
-        $totalProviderCost = bcadd(
-            bcadd(bcadd($textCost, $imageCost, 9), $outputCost, 9),
+        $totalProviderCost = TokenCostCalculator::sum(
+            $textCost,
+            $imageCost,
+            $outputCost,
             $reasoningCost,
-            9
         );
 
         // Platform Markup (default 25%)
         $markupRate = $this->getMarkupRate();
-        $markupAmount = bcmul($totalProviderCost, $markupRate, 9);
-        $totalUserCost = bcadd($totalProviderCost, $markupAmount, 9);
+        $markedUp = TokenCostCalculator::applyMarkup($totalProviderCost, $markupRate);
+        $markupAmount = $markedUp['markup_amount'];
+        $totalUserCost = $markedUp['user_cost'];
 
         $totalTokens = $maxTextTokens + $imageTokens + $outputTokens + $reasoningTokens;
         $minTotalTokens = $minTextTokens + $imageTokens + $outputTokens + $minReasoning;
@@ -158,20 +160,5 @@ class PricingEstimationService implements PricingEstimationServiceInterface
         $raw = (string) config('services.pixelforge.markup_rate', '0.2500');
 
         return bcadd($raw, '0', 4);
-    }
-
-    /**
-     * Calculate cost for a token category in USD using exact 9-decimal precision.
-     * Formula: (tokens * ratePer1M) / 1,000,000
-     */
-    protected function calculateCategoryCost(int $tokens, string $ratePer1M): string
-    {
-        if ($tokens <= 0 || bccomp($ratePer1M, '0', 9) <= 0) {
-            return '0.000000000';
-        }
-
-        $numerator = bcmul((string) $tokens, $ratePer1M, 9);
-
-        return bcdiv($numerator, '1000000', 9);
     }
 }
